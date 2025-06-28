@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <v-navigation-drawer app permanent>
+
+    <v-navigation-drawer v-model="drawer" app permanent>
       <v-list-item class="px-4">
         <v-icon class="me-2">mdi-school</v-icon>
         <div>
@@ -47,11 +48,21 @@
     <!-- <v-main> -->
     <v-container class="fill-height">
       <router-view />
+      <v-app-bar app dark>
+        <v-app-bar-nav-icon @click="toggleDrawer" />
+        <v-toolbar-title>EduSystem</v-toolbar-title>
+      </v-app-bar>
     </v-container>
     <!-- </v-main> -->
   </v-app>
 </template>
 
 <script lang="ts" setup>
-  //
+  import { ref } from 'vue';
+
+  const drawer = ref(true)
+
+  function toggleDrawer () {
+    drawer.value = !drawer.value
+  }
 </script>

@@ -33,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, defineEmits, defineProps } from 'vue';
 
   type RowKey = { id: string, name: string }
   type GenericItem = Record<string, any>
