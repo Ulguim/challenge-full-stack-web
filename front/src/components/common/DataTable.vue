@@ -1,5 +1,6 @@
 <template>
   <v-data-table
+
     class="rounded-lg elevation-1"
     density="comfortable"
     :headers="headers"
@@ -9,7 +10,7 @@
   >
     <template #item.actions="{ item }">
       <v-btn
-        class="me-2"
+        class="me-2 "
         color="primary"
         density="compact"
         size="small"

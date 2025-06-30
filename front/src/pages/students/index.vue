@@ -1,13 +1,35 @@
 <template>
-  <v-container class="pa-4 fill-height flex flex-column">
-    <section class="mb-4">
-      <h1 class="text-h5 font-weight-bold">Lista de Alunos</h1>
-      <p class="text-subtitle-1 text-grey-darken-1">
-        Gerencie os alunos cadastrados na plataforma.
-      </p>
+  <v-container class="pa-4 fill-height flex flex-column w-100">
+    <section class="mb-4 w-100">
+      <v-card class="pa-4" elevation="1" rounded="lg">
+        <v-row justify="space-between" no-gutters>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="search"
+              class="rounded-lg"
+              density="comfortable"
+              hide-details
+              placeholder="Digite sua busca"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+            />
+          </v-col>
+
+          <v-col cols="12" md="auto">
+            <v-btn
+              class="text-white font-weight-medium"
+              color="primary"
+              prepend-icon="mdi-plus"
+              @click="onRegister"
+            >
+              Cadastrar Aluno
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-card>
     </section>
-    <section class="mb-4">
-      <v-row class="d-flex justify-space-between align-center">
+    <section class="mb-4  d-flex w-100 ">
+      <v-row class="d-flex justify-space-around align-center">
         <v-col
           v-for="(card, index) in cards"
           :key="index"
@@ -25,7 +47,7 @@
         </v-col>
       </v-row>
     </section>
-    <section class="mb-4">
+    <section class="mb-4 w-100">
       <DataTable
         :data-list="alunos"
         :row-keys="rowKeys"
@@ -37,6 +59,10 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+  const router = useRouter()
   const alunos = [
     {
       id: 'RA001234',
@@ -90,10 +116,19 @@
   ]
   function onEdit (item: Record<string, any>) {
     console.log('Editar aluno:', item)
-  // TODO: Implementar lógica de edição
+
+    const studentId = item.id
+    router.push(`/students/${studentId}/edit`)
   }
   function onDelete (item: Record<string, any>) {
     console.log('Excluir aluno:', item)
   // TODO: Implementar lógica de exclusão
   }
+
+  function onRegister () {
+    console.log('Cadastrar novo aluno')
+    router.push('/students/register')
+  }
+
+  const search = ref('')
 </script>
