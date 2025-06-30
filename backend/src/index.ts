@@ -3,6 +3,8 @@ import cors from "cors";
 import "dotenv/config";
 import studentRoute from "./modules/students/student.routes";
 import prisma from "./config/prisma";
+import authRoute from "./modules/auth/auth.route";
+import { authMiddleware } from "./middlewares/auth.middleware";
 
 const app = express();
 
@@ -22,7 +24,8 @@ async function bootstrap() {
     console.error("Database connection error", err);
     process.exit(1);
   }
-  app.use("/api", studentRoute);
+  app.use("/students",authMiddleware ,studentRoute);
+  app.use('/api/auth',authRoute)
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log("server running on port 3000"));
 }
