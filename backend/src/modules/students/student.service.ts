@@ -1,9 +1,11 @@
-import prisma from "../../config/prisma";
+
+import { PrismaClient } from "@prisma/client";
 import { CreateStudentDto, UpdateStudentDto } from "./student.schema";
 
 export class StudentService {
+    constructor(private prisma: PrismaClient) {}
   async create(data: CreateStudentDto) {
-    return await prisma.student.create({ data });
+    return await this.prisma.student.create({ data });
   }
 
   async findAll(params?: { filter?: string }) {
@@ -18,25 +20,25 @@ export class StudentService {
       ];
     }
 
-    return await prisma.student.findMany({
+    return await this.prisma.student.findMany({
       where,
       orderBy: { createdAt: "desc" },
     });
   }
 
   async update(id: string, data: UpdateStudentDto) {
-    return await prisma.student.update({ where: { id }, data });
+    return await this.prisma.student.update({ where: { id }, data });
   }
 
   async remove(id: string) {
-    return await prisma.student.update({
+    return await this.prisma.student.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
   }
 
   async findById(id: string) {
-    return await prisma.student.findFirst({
+    return await this.prisma.student.findFirst({
       where: { id, deletedAt: null },
     });
   }
