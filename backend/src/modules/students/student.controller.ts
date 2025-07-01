@@ -45,4 +45,17 @@ export class StudentController {
       res.status(400).json({ error: "Failed to delete student", details: err });
     }
   }
+
+  async getById(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const student = await service.findById(id);
+      if (!student) {
+         res.status(404).json({ error: "Student not found" });
+      }
+      res.json(student);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch student", details: err });
+    }
+  }
 }

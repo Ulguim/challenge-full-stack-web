@@ -34,4 +34,10 @@ export class StudentService {
       data: { deletedAt: new Date() },
     });
   }
+
+  async findById(id: string) {
+    return await prisma.student.findFirst({
+      where: { id, deletedAt: null },
+    });
+  }
 }
