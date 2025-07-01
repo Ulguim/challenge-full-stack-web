@@ -1,5 +1,17 @@
 <template>
-  <v-navigation-drawer app :model-value="modelValue" permanent @update:model-value="emit('update:modelValue', $event)">
+  <v-navigation-drawer
+    v-model="internalValue"
+    app
+    :permanent="!smAndDown"
+    style="z-index: 1000"
+    :temporary="smAndDown"
+  >
+    <v-row v-if="smAndDown" class="ma-0 pa-2" justify="end">
+      <v-btn icon @click.stop="internalValue = false">
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+    </v-row>
+
     <v-container class="pa-5">
       <v-list-item class="px-4">
         <v-icon class="me-2">mdi-school</v-icon>
@@ -9,10 +21,11 @@
         </div>
       </v-list-item>
     </v-container>
+
     <v-divider class="my-2" />
+
     <v-container class="pa-5">
       <v-list-subheader>Menu Principal</v-list-subheader>
-
       <v-list density="compact" nav>
         <v-list-item
           href="/students"
@@ -21,6 +34,7 @@
         />
       </v-list>
     </v-container>
+
     <template #append>
       <div class="text-center text-caption mt-6 mb-2">
         © 2024 EduSystem
@@ -30,12 +44,21 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
-    modelValue: boolean
-  }>()
+import { ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+const { smAndDown } = useDisplay()
 
-  const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void
-  }>()
+const props = defineProps<{ modelValue: boolean }>()
+const emit = defineEmits<{ (e: 'update:modelValue', value: boolean): void }>()
+
+const internalValue = ref(smAndDown.value ? false : props.modelValue)
+
+watch(() => props.modelValue, val => {
+  internalValue.value = val
+})
+
+watch(internalValue, val => {
+  emit('update:modelValue', val)
+})
 
 </script>

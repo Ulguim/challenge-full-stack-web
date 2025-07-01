@@ -1,119 +1,149 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { z } from 'zod'
+import { useApiFetch } from '@/services/http'
 
-  const schema = z.object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().email('Invalid e-mail'),
-    ra: z.string().min(1, 'RA is required'),
-    cpf: z.string().min(1, 'CPF is required'),
-  })
+const schema = z.object({
+  name: z.string().min(1, 'Nome obrigatório'),
+  email: z.string().email('E-mail inválido'),
+  ra: z.string().min(1, 'RA obrigatório'),
+  cpf: z
+    .string({
+      required_error: 'CPF/CNPJ é obrigatório.',
+    })
+    .regex(/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/, 'CPF inválido')
+    .refine(doc => {
+      const replacedDoc = doc.replace(/\D/g, '')
+      return replacedDoc.length >= 11
+    }, 'CPF/CNPJ deve conter no mínimo 11 caracteres.')
 
-  const route = useRoute() as ReturnType<typeof useRoute> & { params: { id?: string } }
-  const router = useRouter()
+    .refine(doc => {
+      const replacedDoc = doc.replace(/\D/g, '')
+      return replacedDoc.length <= 14
+    }, 'CPF/CNPJ deve conter no máximo 14 caracteres.')
+    .refine(doc => {
+      const replacedDoc = doc.replace(/\D/g, '')
+      return !!Number(replacedDoc)
+    }, 'CPF/CNPJ deve conter apenas números.'),
+})
 
-  const studentId = route.params.id ? String(route.params.id) : null
+const route = useRoute() as ReturnType<typeof useRoute> & {
+  params: { id?: string }
+}
+const router = useRouter()
 
-  const form = ref({
-    name: '',
-    email: '',
-    ra: '',
-    cpf: '',
-  })
+const studentId = route.params.id ? String(route.params.id) : null
 
-  const errors = ref<Record<string, string>>({})
+const form = ref({
+  name: '',
+  email: '',
+  ra: '',
+  cpf: '',
+})
 
-  onMounted(async () => {
-    if (studentId) {
-      const response = await fetch(`/api/students/${studentId}`)
-      const data = await response.json()
+const errors = ref<Record<string, string>>({})
+
+const snackbar = ref(false)
+const snackbarMessage = ref('')
+const snackbarColor = ref<'success' | 'error'>('success')
+
+function showToast (message: string, color: 'success' | 'error' = 'success') {
+  snackbarMessage.value = message
+  snackbarColor.value = color
+  snackbar.value = true
+}
+
+onMounted(async () => {
+  if (studentId) {
+    const { data } = await useApiFetch(`/students/${studentId}`, {
+      method: 'GET',
+    })
+    if (data.value) {
       form.value = {
-        name: data.name,
-        email: data.email,
-        ra: data.ra,
-        cpf: data.cpf,
+        name: data.value.name,
+        email: data.value.email,
+        ra: data.value.ra,
+        cpf: data.value.cpf,
       }
     }
+  }
+})
+
+function validateForm () {
+  const result = schema.safeParse(form.value)
+  if (!result.success) {
+    errors.value = result.error.flatten().fieldErrors as Record<string, string>
+    showToast('Dados Inválidos', 'error')
+    return false
+  }
+  errors.value = {}
+  return true
+}
+
+async function saveStudent () {
+  if (!validateForm()) return
+
+  const url = studentId ? `/students/${studentId}` : '/students'
+  const method = studentId ? 'PUT' : 'POST'
+  const { error } = await useApiFetch(url, {
+    method,
+    body: JSON.stringify({
+      name: form.value.name,
+      email: form.value.email,
+      ra: form.value.ra,
+      cpf: form.value.cpf,
+    }),
   })
 
-  function validateForm () {
-    const result = schema.safeParse(form.value)
-    if (!result.success) {
-      errors.value = result.error.flatten().fieldErrors as Record<string, string>
-      return false
-    }
-    errors.value = {}
-    return true
+  if (error.value) {
+    console.error('Failed to save student:', error.value)
+    showToast('Erro ao salvar estudante', 'error')
+    return
   }
 
-  async function saveStudent () {
-    if (!validateForm()) return
+  showToast('Cadastrado com sucesso', 'success')
+  router.push('/students')
+}
 
-    const url = studentId ? `/api/students/${studentId}` : '/api/students'
-    const method = studentId ? 'PUT' : 'POST'
-    console.log('Saving student:', form.value, 'to', url, 'with method', method)
-    router.push('/students')
-  }
+function cancel () {
+  router.push('/students')
+}
 
-  function cancel () {
-    router.push('/students')
-  }
-
-  definePage({
-    meta: {
-      requiresAuth: false,
-      layout: 'AuthenticatedLayout',
-    },
-  })
+definePage({
+  meta: {
+    requiresAuth: true,
+    layout: 'AuthenticatedLayout',
+  },
+})
 </script>
 
 <template>
-  <v-container max-width="md">
-    <v-card>
-      <v-card-title>Cadastro de Aluno</v-card-title>
-      <v-card-text>
-        <v-row dense>
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="form.name"
-              :error-messages="errors.name"
-              label="Nome *"
-            />
-          </v-col>
+  <v-container class="pa-0 fill-height d-flex flex-column align-center">
 
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="form.email"
-              :error-messages="errors.email"
-              label="E-mail *"
-            />
-          </v-col>
+    <StudentForm
+      v-model="form"
+      :errors="errors"
+      :readonly-fields="false"
+      :title="'Cadastrar Aluno'"
+      @cancel="cancel"
+      @submit="saveStudent"
+    />
 
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="form.ra"
-              :disabled="!!studentId"
-              :error-messages="errors.ra"
-              label="RA (Registro Acadêmico) *"
-            />
-          </v-col>
-
-          <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="form.cpf"
-              :disabled="!!studentId"
-              :error-messages="errors.cpf"
-              label="CPF *"
-            />
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-actions class="justify-end">
-        <v-btn variant="outlined" @click="cancel">Cancelar</v-btn>
-        <v-btn color="primary" @click="saveStudent">Salvar</v-btn>
-      </v-card-actions>
-    </v-card>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      location="top"
+      timeout="3000"
+    >
+      {{ snackbarMessage }}
+    </v-snackbar>
   </v-container>
 </template>
+
+<style scoped>
+.form-wrapper {
+  width: 100%;
+  padding: 48px 32px;
+}
+</style>

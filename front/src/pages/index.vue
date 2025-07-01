@@ -1,7 +1,20 @@
-<template>
-  <HelloWorld />
-</template>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-<script lang="ts" setup>
-  //
+const router = useRouter()
+
+onMounted(() => {
+  router.replace('/students')
+})
+definePage({
+  meta: {
+    requiresAuth: true,
+    layout: 'AuthenticatedLayout',
+  },
+})
 </script>
+
+<template>
+  <div />
+</template>

@@ -10,13 +10,13 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     AuthLayout: typeof import('./layouts/AuthenticatedLayout.vue')['default']
-    DataTable: typeof import('./components/common/DataTable.vue')['default']
+    DataTable: typeof import('./components/DataTable.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
-    InfoIcon: typeof import('./components/common/InfoIcon.vue')['default']
+    InfoIcon: typeof import('./components/InfoIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./components/Sidebar.vue')['default']
-    StudentForm: typeof import('./components/studentForm/StudentForm.vue')['default']
+    StudentForm: typeof import('./components/StudentForm.vue')['default']
     Test: typeof import('./layouts/AuthenticatedLayout.vue')['default']
     Topbar: typeof import('./components/Topbar.vue')['default']
   }
