@@ -3,33 +3,39 @@
 
     class="rounded-lg elevation-1"
     density="comfortable"
-    :headers="headers"
+    :headers="
+      headers"
     item-value="id"
     :items="dataList"
+    items-per-page-text="Itens por página"
     width="100%"
   >
     <template #item.actions="{ item }">
-      <v-btn
-        class="me-2 "
-        color="primary"
-        density="compact"
-        size="small"
-        variant="outlined"
-        @click="() => onEdit(item)"
-      >
-        <v-icon icon="mdi-pencil" start /> Editar
-      </v-btn>
+      <div class="d-flex align-center justify-center ga-2">
+        <v-btn
+          class="rounded-pill font-weight-medium text-capitalize px-3"
+          color="primary"
+          size="small"
+          variant="text"
+          @click="() => onEdit(item)"
+        >
+          <v-icon size="18" start>mdi-pencil</v-icon>
+          Editar
+        </v-btn>
 
-      <v-btn
-        color="error"
-        density="compact"
-        size="small"
-        variant="outlined"
-        @click="() => onDelete(item)"
-      >
-        <v-icon icon="mdi-delete" start /> Excluir
-      </v-btn>
+        <v-btn
+          class="rounded-pill font-weight-medium text-capitalize px-3"
+          color="red-darken-2"
+          size="small"
+          variant="text"
+          @click="() => onDelete(item)"
+        >
+          <v-icon size="18" start>mdi-delete</v-icon>
+          Excluir
+        </v-btn>
+      </div>
     </template>
+
   </v-data-table>
 </template>
 
