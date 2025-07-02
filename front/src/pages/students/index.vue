@@ -8,12 +8,12 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="error" @click="confirmDelete">Delete</v-btn>
+        <v-btn color="error" @click="confirmDelete">Excluir</v-btn>
         <v-btn
           color="grey"
           variant="text"
           @click="dialog = false"
-        >Cancel</v-btn>
+        >Cancelar</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -34,7 +34,7 @@
           </v-col>
 
           <v-col
-            :class="{ 'd-flex justify-center pt-4	': smAndDown }"
+            :class="{ 'd-flex justify-center pt-4': smAndDown }"
             cols="12"
             md="auto"
           >
@@ -75,6 +75,7 @@
         :current-page="page"
         :data-list="data"
         :items-per-page="limit"
+        :loading="isFetching"
         :row-keys="rowKeys"
         :total-items="total"
         @delete="onDelete"
@@ -82,7 +83,6 @@
         @update:items-per-page="limit = $event"
         @update:page="page = $event"
       />
-
     </section>
   </v-container>
   <v-snackbar

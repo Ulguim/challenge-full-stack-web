@@ -7,7 +7,7 @@ O projeto foi estruturado seguindo o padrão de arquitetura em camadas, separand
 - **Controller:** Responsável por receber as requisições HTTP, validar dados de entrada e repassar para a camada de serviço.
 - **Service:** Contém a lógica de negócio da aplicação, executando regras antes de acessar o banco de dados.
 - **Repository/ORM (Prisma):** Responsável pela persistência dos dados, utilizando o Prisma ORM para abstração do banco PostgreSQL.
-- **Middlewares:** Implementam funcionalidades transversais como autenticação JWT e tratamento de erros.
+- **Middlewares:** Implementam funcionalidades como autenticação JWT e tratamento de erros.
 - **Validações:** Utilizadas para garantir integridade dos dados antes de persistir ou processar informações.
 
 A aplicação backend é exposta via API RESTful, seguindo boas práticas de versionamento, autenticação e tratamento de erros. O uso do Docker e Docker Compose permite fácil replicação do ambiente, incluindo banco de dados PostgreSQL e dependências.
