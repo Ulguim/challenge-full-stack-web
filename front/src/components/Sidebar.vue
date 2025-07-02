@@ -16,7 +16,7 @@
       <v-list-item class="px-4">
         <v-icon class="me-2">mdi-school</v-icon>
         <div>
-          <div class="font-weight-bold">EduSystem</div>
+          <div class="font-weight-bold">Grupo A</div>
           <div class="text-caption text-grey-darken-1">Gestão Acadêmica</div>
         </div>
       </v-list-item>
@@ -37,7 +37,7 @@
 
     <template #append>
       <div class="text-center text-caption mt-6 mb-2">
-        © 2024 EduSystem
+        © 2025 Grupo A
       </div>
     </template>
   </v-navigation-drawer>
