@@ -18,7 +18,7 @@ export class StudentService {
         { cpf: { contains: params.filter, mode: "insensitive" } },
       ];
     }
-    
+
     const page = params?.page ?? 1;
     const limit = params?.limit ?? 10;
     const skip = (page - 1) * limit;
@@ -46,9 +46,7 @@ export class StudentService {
   }
 
   async remove(id: string) {
-    return await this.prisma.student.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+    return await this.prisma.student.delete({ where: { id },
     });
   }
 
