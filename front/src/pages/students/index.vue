@@ -72,12 +72,17 @@
     </section>
     <section class="mb-4 w-100">
       <DataTable
-        :data-list="data ?? []"
-        :loading="isFetching"
+        :current-page="page"
+        :data-list="data"
+        :items-per-page="limit"
         :row-keys="rowKeys"
+        :total-items="total"
         @delete="onDelete"
         @edit="onEdit"
+        @update:items-per-page="limit = $event"
+        @update:page="page = $event"
       />
+
     </section>
   </v-container>
   <v-snackbar
@@ -113,13 +118,25 @@ const selectedStudent = ref<Student | null>(null);
 
 const filtro = ref('');
 const filtroDebounced = debouncedRef(filtro, 300);
-const query = computed(() => ({ search: filtroDebounced.value }));
+const page = ref(1);
+const limit = ref(10);
+
+const query = computed(() => ({
+  search: filtroDebounced.value,
+  page: page.value,
+  limit: limit.value,
+}));
 
 const {
   data: rawData,
   isFetching,
   execute,
-} = useApiFetch<Student[]>('/students', { method: 'GET' }, query);
+} = useApiFetch<{
+  data: Student[]
+  total: number
+  page: number
+  limit: number
+}>('/students', { method: 'GET' }, query);
 
 async function deleteStudent (id: number) {
   try {
@@ -130,7 +147,8 @@ async function deleteStudent (id: number) {
   }
 }
 
-const data = computed(() => rawData.value ?? []);
+const data = computed(() => rawData.value?.data ?? []);
+const total = computed(() => rawData.value?.total ?? 0);
 
 const router = useRouter();
 const rowKeys = [

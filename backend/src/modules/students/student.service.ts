@@ -1,14 +1,13 @@
-
 import { PrismaClient } from "@prisma/client";
 import { CreateStudentDto, UpdateStudentDto } from "./student.schema";
 
 export class StudentService {
-    constructor(private prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient) {}
   async create(data: CreateStudentDto) {
     return await this.prisma.student.create({ data });
   }
 
-  async findAll(params?: { filter?: string }) {
+  async findAll(params?: { filter?: string; page?: number; limit?: number }) {
     const where: any = { deletedAt: null };
 
     if (params?.filter) {
@@ -20,10 +19,26 @@ export class StudentService {
       ];
     }
 
-    return await this.prisma.student.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const page = params?.page ?? 1;
+    const limit = params?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const [students, total] = await Promise.all([
+      this.prisma.student.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      this.prisma.student.count({ where }),
+    ]);
+
+    return {
+      data: students,
+      total,
+      page,
+      limit,
+    };
   }
 
   async update(id: string, data: UpdateStudentDto) {
@@ -31,9 +46,7 @@ export class StudentService {
   }
 
   async remove(id: string) {
-    return await this.prisma.student.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+    return await this.prisma.student.delete({ where: { id },
     });
   }
 
