@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app dark>
     <v-app-bar-nav-icon @click="$emit('toggle-drawer')" />
-    <v-toolbar-title>EduSystem</v-toolbar-title>
+    <v-toolbar-title>Grupo A Software</v-toolbar-title>
 
     <v-spacer />
 
