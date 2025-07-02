@@ -65,7 +65,13 @@ docker-compose up -d --build
 Após subir os containers, execute:
 
 ```bash
-docker exec -it api sh -c "npx prisma migrate deploy && npm run seed"
+docker exec -it api sh -c "npx prisma generate && npx prisma migrate deploy && npm run seed"
+```
+
+Após rodar as migrations e seeders, caso precise reiniciar o container da API, execute:
+
+```bash
+docker restart api
 ```
 
 - O backend estará disponível em `http://localhost:4000` (ou porta definida no .env).
